@@ -8,5 +8,12 @@ branches:
     - master
     - /^v\d+\.\d+\.\d+$/
 
+cache:
+  directories:
+  - $HOME/.m2/repository
+
+# skip the default install step
+install: true
+
 script:
-  - mvn clean package
+- cp .travis.settings.xml $HOME/.m2/settings.xml && mvn clean deploy

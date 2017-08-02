@@ -20,13 +20,11 @@ package com.experoinc.dropwizard.dsegraph;
 import com.datastax.driver.dse.DseCluster;
 import com.datastax.driver.dse.DseSession;
 import com.datastax.driver.dse.graph.GraphOptions;
-import com.datastax.dse.graph.api.DseGraph;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.dropwizard.setup.Environment;
 import io.dropwizard.util.Duration;
 import io.dropwizard.validation.MinDuration;
-import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import javax.validation.constraints.Min;
@@ -69,6 +67,16 @@ public class DseGraphFactory {
     @JsonProperty
     public void setContactPoints(String[] contactPoints) {
         this.contactPoints = contactPoints;
+    }
+
+    @JsonProperty
+    public int getPort() {
+        return port;
+    }
+
+    @JsonProperty
+    public void setPort(int port) {
+        this.port = port;
     }
 
     @JsonProperty

@@ -20,7 +20,7 @@ package com.experoinc.dropwizard.dsegraph;
 import com.codahale.metrics.health.HealthCheck;
 import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.ResultSetFuture;
-import com.datastax.driver.core.Session;
+import com.datastax.driver.dse.DseSession;
 import io.dropwizard.util.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,47 +29,55 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 /**
- * A {@link HealthCheck} that validates the servers ability to connect to the tinkerpop server
+ * A {@link HealthCheck} that validates the servers ability to connect to the DSE server
  *
  * @author Ted Wilmes
+ * @author Dan Sorak - updated query call and log messages
  */
 public class DseGraphHealthCheck extends HealthCheck {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DseGraphHealthCheck.class);
 
-    private final Session session;
-    private final String validationGremlinQuery;
+    private final DseSession session;
+    private final String validationQuery;
     private final Duration validationTimeout;
 
     public DseGraphHealthCheck(
-            Session session,
-            String validationGremlinQuery,
+            DseSession session,
+            String validationQuery,
             Duration validationTimeout) {
 
         this.session = session;
-        this.validationGremlinQuery = validationGremlinQuery;
+        this.validationQuery = validationQuery;
         this.validationTimeout = validationTimeout;
     }
 
     @Override
-    protected Result check() throws Exception {
+    protected Result check() {
 
         try {
-            ResultSetFuture future = session.executeAsync(validationGremlinQuery);
+            ResultSetFuture future = session.executeAsync(validationQuery);
             ResultSet result = future.get(validationTimeout.toMilliseconds(), TimeUnit.MILLISECONDS);
 
+            String msg = String.format("Validation query completed: '%s' = '%s'",
+                    validationQuery,
+                    result.toString());
+            LOGGER.info(msg);
             return Result.healthy();
 
         } catch (TimeoutException ex) {
-            String msg = String.format("Validation query was unable to complete after %d ms",
-                    validationTimeout.toMilliseconds());
+            String msg = String.format("Validation query was unable to complete after %d ms: '%s'",
+                    validationTimeout.toMilliseconds(),
+                    validationQuery);
 
             LOGGER.error(msg);
             return Result.unhealthy(msg);
         } catch (Exception ex) {
-            LOGGER.error("Unable to execute tinker pop health check", ex);
-            return Result.unhealthy(ex.getMessage());
+            String msg = String.format("Validation query was unable to execute: '%s' (%s)",
+                    validationQuery,
+                    ex.getMessage());
+            LOGGER.error(msg);
+            return Result.unhealthy(msg);
         }
-
     }
 }

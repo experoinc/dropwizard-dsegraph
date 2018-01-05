@@ -58,22 +58,28 @@ public class DseGraphHealthCheck extends HealthCheck {
             ListenableFuture future = session.executeGraphAsync(validationQuery);
             Object result = future.get(validationTimeout.toMilliseconds(), TimeUnit.MILLISECONDS);
 
-            String msg = String.format("Validation query completed: '%s' = '%s'",
+            String msg = String.format("Validation query completed on %s (%s): '%s' = '%s'",
+                    session.getCluster().getConfiguration().getGraphOptions().getGraphName(),
+                    session.getCluster().getClusterName(),
                     validationQuery,
                     result.toString());
             LOGGER.info(msg);
             return Result.healthy(msg);
 
         } catch (TimeoutException ex) {
-            String msg = String.format("Validation query was unable to complete after %d ms: '%s'",
+            String msg = String.format("Validation query was unable to complete after %d ms on %s (%s): '%s'",
                     validationTimeout.toMilliseconds(),
+                    session.getCluster().getConfiguration().getGraphOptions().getGraphName(),
+                    session.getCluster().getClusterName(),
                     validationQuery);
 
             LOGGER.error(msg);
             return Result.unhealthy(msg);
 
         } catch (Exception ex) {
-            String msg = String.format("Validation query was unable to execute: '%s' (%s)",
+            String msg = String.format("Validation query was unable to execute on %s (%s): '%s' (%s)",
+                    session.getCluster().getConfiguration().getGraphOptions().getGraphName(),
+                    session.getCluster().getClusterName(),
                     validationQuery,
                     ex.getMessage());
             LOGGER.error(msg);

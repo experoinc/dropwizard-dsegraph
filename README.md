@@ -25,18 +25,6 @@ A health check is setup using the dropwizard health check registry. It executes 
 The `Cluster` built from the `DseGraphFactory` is included in dropwizard's managed lifecycle. This
 will allow dropwizard to try and gracefully shut down the DSEGraph client connections on shutdown.
 
-## Usage ##
-
-Include the dropwizard-dsegraph library in your project:
-
-```xml
-        <dependency>
-            <groupId>com.experoinc</groupId>
-            <artifactId>dropwizard-dsegraph</artifactId>
-            <version>${dropwizard.dsegraph.version}</version>
-        </dependency>
-```
-
 ## Dependency Managed Usage ##
 
 This utility includes references to DSE Graph and DropWizard. To maintain correct
@@ -45,12 +33,18 @@ the POM. To use it, include the following in your pom:
 
 Top Level:
 ```xml
+    <properties>
+        <dropwizard-desgraph.version>1.2.2-1.2.4-SNAPSHOT</dropwizard-desgraph.version>
+    </properties>
+```
+
+```xml
     <dependencyManagement>
         <dependencies>
             <dependency>
                 <groupId>com.experoinc</groupId>
                 <artifactId>dropwizard-dsegraph</artifactId>
-                <version>${dropwizard.dsegraph.version}</version>
+                <version>${dropwizard-desgraph.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -58,48 +52,37 @@ Top Level:
     </dependencyManagement>
 ```
 
-Dependencies Section:
+Dependencies Section (add or remove dependencies as needed - Dependency Management will auto-assign the version):
 ```xml
     <dependencies>
         <dependency>
             <groupId>com.experoinc</groupId>
             <artifactId>dropwizard-dsegraph</artifactId>
-            <version>${dropwizard.dsegraph.version}</version>
+            <version>${dropwizard-desgraph.version}</version>
         </dependency>
-
-        <!-- https://mvnrepository.com/artifact/io.dropwizard/dropwizard-forms -->
         <dependency>
             <groupId>io.dropwizard</groupId>
             <artifactId>dropwizard-forms</artifactId>
-            <!-- Dependency Management will auto-assign the version -->
         </dependency>
-
-        <!-- https://mvnrepository.com/artifact/com.datastax.dse/dse-java-driver-core -->
         <dependency>
             <groupId>com.datastax.dse</groupId>
             <artifactId>dse-java-driver-graph</artifactId>
-            <!-- Dependency Management will auto-assign the version -->
         </dependency>
-
-        <!-- https://mvnrepository.com/artifact/com.datastax.dse/dse-java-driver-core -->
         <dependency>
             <groupId>com.datastax.dse</groupId>
             <artifactId>dse-java-driver-core</artifactId>
-            <!-- Dependency Management will auto-assign the version -->
         </dependency>
-
-        <!-- https://mvnrepository.com/artifact/com.datastax.dse/dse-java-driver-core -->
         <dependency>
             <groupId>com.datastax.dse</groupId>
             <artifactId>dse-java-driver-extras</artifactId>
-            <!-- Dependency Management will auto-assign the version -->
         </dependency>
-
-        <!-- https://mvnrepository.com/artifact/com.datastax.dse/dse-java-driver-core -->
         <dependency>
             <groupId>com.datastax.dse</groupId>
             <artifactId>dse-java-driver-mapping</artifactId>
-            <!-- Dependency Management will auto-assign the version -->
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
         </dependency>
     </dependencies>
 ```
@@ -109,21 +92,28 @@ Include a `DseGraphFactory` instance in your application config
 ```java
 public class ApplicationConfig extends Configuration {
     @Valid
+    @NotNull
     private DseGraphFactory dseGraphFactory = new DseGraphFactory();
 
-    @JsonProperty
+    @JsonProperty("graphFactory")
     public DseGraphFactory getDseGraphFactory() {
         return dseGraphFactory;
     }
 
-    @JsonProperty
+    @JsonProperty("graphFactory")
     public void setDseGraphFactory(DseGraphFactory dseGraphFactory) {
         this.dseGraphFactory = dseGraphFactory;
     }
-
-    @JsonProperty("swagger")
-    public SwaggerBundleConfiguration swaggerBundleConfiguration;
 }
+```
+
+Include a section in config.yml to define the graph properties:
+
+```yaml
+graphFactory:
+ graphName: ${DPS_DB_NAME:-dps_graph}
+ contactPoints:
+   - ${DPS_DB_HOST:-1.2.3.4}
 ```
 
 Build the DSEGraph cluster in your applications `run(ApplicationConfig configuration, Environment environment)` method.

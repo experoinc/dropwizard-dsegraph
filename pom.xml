@@ -21,7 +21,7 @@
 
     <groupId>com.experoinc</groupId>
     <artifactId>dropwizard-dsegraph</artifactId>
-    <version>1.0.1-SNAPSHOT</version>
+    <version>1.2.2-1.2.4-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <properties>
@@ -29,7 +29,6 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
         <datastax.driver.version>1.2.4</datastax.driver.version>
-        <tinkerpop.version>3.2.7</tinkerpop.version>
         <dropwizard.version>1.2.2</dropwizard.version>
         <slf4j.version>1.7.25</slf4j.version>
 
@@ -84,13 +83,6 @@
                 <version>${datastax.driver.version}</version>
             </dependency>
 
-            <!-- https://mvnrepository.com/artifact/org.apache.tinkerpop/gremlin-core -->
-            <dependency>
-                <groupId>org.apache.tinkerpop</groupId>
-                <artifactId>gremlin-core</artifactId>
-                <version>${tinkerpop.version}</version>
-            </dependency>
-
             <!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-api -->
             <dependency>
                 <groupId>org.slf4j</groupId>
@@ -105,12 +97,6 @@
         <dependency>
             <groupId>com.datastax.dse</groupId>
             <artifactId>dse-java-driver-graph</artifactId>
-            <!-- Dependency Management will auto-assign the version -->
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.tinkerpop</groupId>
-            <artifactId>gremlin-core</artifactId>
             <!-- Dependency Management will auto-assign the version -->
         </dependency>
 

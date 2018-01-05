@@ -45,9 +45,11 @@ public class DseGraphFactory {
     private int port = DEFAULT_PORT;
 
     @NotEmpty
-    private String validationQuery = "select release_version from system.local"; // g.V().hasNext()";
+    //private String validationQuery = "select release_version from system.local";
+    private String validationQuery = "g.V().hasNext()";
 
-    @NotNull @MinDuration(value = 1, unit = TimeUnit.MILLISECONDS)
+    @NotNull
+    @MinDuration(value = 1, unit = TimeUnit.MILLISECONDS)
     private Duration validationQueryTimeout = Duration.seconds(10);
 
     @NotEmpty

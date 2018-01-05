@@ -21,7 +21,7 @@
 
     <artifactId>dropwizard-dsegraph</artifactId>
     <groupId>com.experoinc</groupId>
-    <version>1.0.1-DNS</version>
+    <version>1.0.1-SNAPSHOT</version>
 
     <distributionManagement>
         <snapshotRepository>

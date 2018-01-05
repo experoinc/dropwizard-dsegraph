@@ -25,48 +25,112 @@ A health check is setup using the dropwizard health check registry. It executes 
 The `Cluster` built from the `DseGraphFactory` is included in dropwizard's managed lifecycle. This
 will allow dropwizard to try and gracefully shut down the DSEGraph client connections on shutdown.
 
-## Usage ##
+## Dependency Managed Usage ##
 
-Include the dropwizard-dsegraph library as a dependency
+This utility includes references to DSE Graph and DropWizard. To maintain correct
+versions of these 3rd party libraries, there is a Dependency Management section in
+the POM. To use it, include the following in your pom:
+
+Top Level:
+```xml
+    <properties>
+        <dropwizard-desgraph.version>1.2.2-1.2.4-SNAPSHOT</dropwizard-desgraph.version>
+    </properties>
+```
 
 ```xml
-<dependency>
-  <groupId>com.experoinc</groupId>
-  <artifactId>dropwizard-dsegraph</artifactId>
-  <version>${dropwizard-dsegraph.version}</version>
-</dependency>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.experoinc</groupId>
+                <artifactId>dropwizard-dsegraph</artifactId>
+                <version>${dropwizard-desgraph.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+```
+
+Dependencies Section (add or remove dependencies as needed - Dependency Management will auto-assign the version):
+```xml
+    <dependencies>
+        <dependency>
+            <groupId>com.experoinc</groupId>
+            <artifactId>dropwizard-dsegraph</artifactId>
+            <version>${dropwizard-desgraph.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.dropwizard</groupId>
+            <artifactId>dropwizard-forms</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.datastax.dse</groupId>
+            <artifactId>dse-java-driver-graph</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.datastax.dse</groupId>
+            <artifactId>dse-java-driver-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.datastax.dse</groupId>
+            <artifactId>dse-java-driver-extras</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.datastax.dse</groupId>
+            <artifactId>dse-java-driver-mapping</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+    </dependencies>
 ```
 
 Include a `DseGraphFactory` instance in your application config
 
 ```java
-public class AppConfig extends Configuration {
-
+public class ApplicationConfig extends Configuration {
     @Valid
     @NotNull
     private DseGraphFactory dseGraphFactory = new DseGraphFactory();
 
-    @JsonProperty("dsegraph")
+    @JsonProperty("graphFactory")
     public DseGraphFactory getDseGraphFactory() {
-        return cassandra;
+        return dseGraphFactory;
     }
 
-    @JsonProperty("dseGraph")
+    @JsonProperty("graphFactory")
     public void setDseGraphFactory(DseGraphFactory dseGraphFactory) {
         this.dseGraphFactory = dseGraphFactory;
     }
 }
 ```
 
-Build the DSEGraph cluster in your applications `run(AppConfig ac, Environment environment)` method.
+Include a section in config.yml to define the graph properties:
+
+```yaml
+graphFactory:
+ graphName: ${DPS_DB_NAME:-dps_graph}
+ contactPoints:
+   - ${DPS_DB_HOST:-1.2.3.4}
+```
+
+Build the DSEGraph cluster in your applications `run(ApplicationConfig configuration, Environment environment)` method.
 
 ```java
-public class App extends Application<AppConfig> {
+public class App extends Application<ApplicationConfig> {
     
     @Override
-    public void run(AppConfig configuration, Environment environment) throws Exception {
-        DseGraphFactory graphFactory = configuration.getGraphFactory();
-        DseCluster cluster = graphFactory.build(environment);
+    public void run(final ApplicationConfig configuration,
+                    final Environment environment) {
+        DseGraphFactory graphFactory = configuration.getDseGraphFactory();
+
+        DseCluster c = graphFactory.build(environment);
+        DseSession s = c.newSession();
+        GraphTraversalSource g = DseGraph.traversal(s);
+
+        environment.jersey().register(new MyResource(g));
     }
 }
 ```

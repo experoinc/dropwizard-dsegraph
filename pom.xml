@@ -19,9 +19,23 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>dropwizard-dsegraph</artifactId>
     <groupId>com.experoinc</groupId>
-    <version>1.0.0-SNAPSHOT</version>
+    <artifactId>dropwizard-dsegraph</artifactId>
+    <version>1.0.1-SNAPSHOT</version>
+    <packaging>jar</packaging>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
+        <datastax.driver.version>1.2.4</datastax.driver.version>
+        <tinkerpop.version>3.2.7</tinkerpop.version>
+        <dropwizard.version>1.2.2</dropwizard.version>
+        <slf4j.version>1.7.25</slf4j.version>
+
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+    </properties>
 
     <distributionManagement>
         <snapshotRepository>
@@ -30,42 +44,44 @@
         </snapshotRepository>
     </distributionManagement>
 
-    <properties>
-        <dropwizard.version>1.0.0</dropwizard.version>
-        <tinkerpop.version>3.2.3</tinkerpop.version>
-        <datastax.driver.version>1.2.3</datastax.driver.version>
-        <slf4j.version>1.7.25</slf4j.version>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
-    </properties>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>io.dropwizard</groupId>
+                <artifactId>dropwizard-bom</artifactId>
+                <version>${dropwizard.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <dependencies>
+        <!-- https://mvnrepository.com/artifact/com.datastax.dse/dse-java-driver-graph -->
         <dependency>
             <groupId>com.datastax.dse</groupId>
             <artifactId>dse-java-driver-graph</artifactId>
             <version>${datastax.driver.version}</version>
         </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.apache.tinkerpop/gremlin-core -->
         <dependency>
             <groupId>org.apache.tinkerpop</groupId>
             <artifactId>gremlin-core</artifactId>
             <version>${tinkerpop.version}</version>
         </dependency>
+
+        <!-- https://mvnrepository.com/artifact/io.dropwizard/dropwizard-core -->
         <dependency>
             <groupId>io.dropwizard</groupId>
             <artifactId>dropwizard-core</artifactId>
-            <version>${dropwizard.version}</version>
-            <scope>compile</scope>
         </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-api -->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
             <version>${slf4j.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>io.dropwizard</groupId>
-            <artifactId>dropwizard-testing</artifactId>
-            <version>${dropwizard.version}</version>
-            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>

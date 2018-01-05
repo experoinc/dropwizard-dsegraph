@@ -18,8 +18,6 @@
 package com.experoinc.dropwizard.dsegraph;
 
 import com.codahale.metrics.health.HealthCheck;
-import com.datastax.driver.core.ResultSet;
-import com.datastax.driver.core.ResultSetFuture;
 import com.datastax.driver.dse.DseSession;
 import com.google.common.util.concurrent.ListenableFuture;
 import io.dropwizard.util.Duration;
@@ -33,7 +31,7 @@ import java.util.concurrent.TimeoutException;
  * A {@link HealthCheck} that validates the servers ability to connect to the DSE server
  *
  * @author Ted Wilmes
- * @author Dan Sorak - updated query call and log messages
+ * @author dan.sorak - updated query call and log messages
  */
 public class DseGraphHealthCheck extends HealthCheck {
 

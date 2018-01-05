@@ -46,6 +46,8 @@
 
     <dependencyManagement>
         <dependencies>
+
+            <!-- https://mvnrepository.com/artifact/io.dropwizard/dropwizard-core -->
             <dependency>
                 <groupId>io.dropwizard</groupId>
                 <artifactId>dropwizard-bom</artifactId>
@@ -53,35 +55,75 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+
+            <!-- https://mvnrepository.com/artifact/com.datastax.dse/dse-java-driver-core -->
+            <dependency>
+                <groupId>com.datastax.dse</groupId>
+                <artifactId>dse-java-driver-core</artifactId>
+                <version>${datastax.driver.version}</version>
+            </dependency>
+
+            <!-- https://mvnrepository.com/artifact/com.datastax.dse/dse-java-driver-graph -->
+            <dependency>
+                <groupId>com.datastax.dse</groupId>
+                <artifactId>dse-java-driver-graph</artifactId>
+                <version>${datastax.driver.version}</version>
+            </dependency>
+
+            <!-- https://mvnrepository.com/artifact/com.datastax.dse/dse-java-driver-mapping -->
+            <dependency>
+                <groupId>com.datastax.dse</groupId>
+                <artifactId>dse-java-driver-mapping</artifactId>
+                <version>${datastax.driver.version}</version>
+            </dependency>
+
+            <!-- https://mvnrepository.com/artifact/com.datastax.dse/dse-java-driver-extras -->
+            <dependency>
+                <groupId>com.datastax.dse</groupId>
+                <artifactId>dse-java-driver-extras</artifactId>
+                <version>${datastax.driver.version}</version>
+            </dependency>
+
+            <!-- https://mvnrepository.com/artifact/org.apache.tinkerpop/gremlin-core -->
+            <dependency>
+                <groupId>org.apache.tinkerpop</groupId>
+                <artifactId>gremlin-core</artifactId>
+                <version>${tinkerpop.version}</version>
+            </dependency>
+
+            <!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-api -->
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>${slf4j.version}</version>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
 
     <dependencies>
-        <!-- https://mvnrepository.com/artifact/com.datastax.dse/dse-java-driver-graph -->
         <dependency>
             <groupId>com.datastax.dse</groupId>
             <artifactId>dse-java-driver-graph</artifactId>
-            <version>${datastax.driver.version}</version>
+            <!-- Dependency Management will auto-assign the version -->
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/org.apache.tinkerpop/gremlin-core -->
         <dependency>
             <groupId>org.apache.tinkerpop</groupId>
             <artifactId>gremlin-core</artifactId>
-            <version>${tinkerpop.version}</version>
+            <!-- Dependency Management will auto-assign the version -->
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/io.dropwizard/dropwizard-core -->
         <dependency>
             <groupId>io.dropwizard</groupId>
             <artifactId>dropwizard-core</artifactId>
+            <!-- Dependency Management will auto-assign the version -->
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-api -->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>${slf4j.version}</version>
+            <!-- Dependency Management will auto-assign the version -->
         </dependency>
     </dependencies>
 </project>

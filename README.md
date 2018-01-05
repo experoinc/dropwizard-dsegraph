@@ -27,46 +27,120 @@ will allow dropwizard to try and gracefully shut down the DSEGraph client connec
 
 ## Usage ##
 
-Include the dropwizard-dsegraph library as a dependency
+Include the dropwizard-dsegraph library in your project:
 
 ```xml
-<dependency>
-  <groupId>com.experoinc</groupId>
-  <artifactId>dropwizard-dsegraph</artifactId>
-  <version>${dropwizard-dsegraph.version}</version>
-</dependency>
+        <dependency>
+            <groupId>com.experoinc</groupId>
+            <artifactId>dropwizard-dsegraph</artifactId>
+            <version>${dropwizard.dsegraph.version}</version>
+        </dependency>
+```
+
+## Dependency Managed Usage ##
+
+This utility includes references to DSE Graph and DropWizard. To maintain correct
+versions of these 3rd party libraries, there is a Dependency Management section in
+the POM. To use it, include the following in your pom:
+
+Top Level:
+```xml
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.experoinc</groupId>
+                <artifactId>dropwizard-dsegraph</artifactId>
+                <version>${dropwizard.dsegraph.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+```
+
+Dependencies Section:
+```xml
+    <dependencies>
+        <dependency>
+            <groupId>com.experoinc</groupId>
+            <artifactId>dropwizard-dsegraph</artifactId>
+            <version>${dropwizard.dsegraph.version}</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/io.dropwizard/dropwizard-forms -->
+        <dependency>
+            <groupId>io.dropwizard</groupId>
+            <artifactId>dropwizard-forms</artifactId>
+            <!-- Dependency Management will auto-assign the version -->
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/com.datastax.dse/dse-java-driver-core -->
+        <dependency>
+            <groupId>com.datastax.dse</groupId>
+            <artifactId>dse-java-driver-graph</artifactId>
+            <!-- Dependency Management will auto-assign the version -->
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/com.datastax.dse/dse-java-driver-core -->
+        <dependency>
+            <groupId>com.datastax.dse</groupId>
+            <artifactId>dse-java-driver-core</artifactId>
+            <!-- Dependency Management will auto-assign the version -->
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/com.datastax.dse/dse-java-driver-core -->
+        <dependency>
+            <groupId>com.datastax.dse</groupId>
+            <artifactId>dse-java-driver-extras</artifactId>
+            <!-- Dependency Management will auto-assign the version -->
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/com.datastax.dse/dse-java-driver-core -->
+        <dependency>
+            <groupId>com.datastax.dse</groupId>
+            <artifactId>dse-java-driver-mapping</artifactId>
+            <!-- Dependency Management will auto-assign the version -->
+        </dependency>
+    </dependencies>
 ```
 
 Include a `DseGraphFactory` instance in your application config
 
 ```java
-public class AppConfig extends Configuration {
-
+public class ApplicationConfig extends Configuration {
     @Valid
-    @NotNull
     private DseGraphFactory dseGraphFactory = new DseGraphFactory();
 
-    @JsonProperty("dsegraph")
+    @JsonProperty
     public DseGraphFactory getDseGraphFactory() {
-        return cassandra;
+        return dseGraphFactory;
     }
 
-    @JsonProperty("dseGraph")
+    @JsonProperty
     public void setDseGraphFactory(DseGraphFactory dseGraphFactory) {
         this.dseGraphFactory = dseGraphFactory;
     }
+
+    @JsonProperty("swagger")
+    public SwaggerBundleConfiguration swaggerBundleConfiguration;
 }
 ```
 
-Build the DSEGraph cluster in your applications `run(AppConfig ac, Environment environment)` method.
+Build the DSEGraph cluster in your applications `run(ApplicationConfig configuration, Environment environment)` method.
 
 ```java
-public class App extends Application<AppConfig> {
+public class App extends Application<ApplicationConfig> {
     
     @Override
-    public void run(AppConfig configuration, Environment environment) throws Exception {
-        DseGraphFactory graphFactory = configuration.getGraphFactory();
-        DseCluster cluster = graphFactory.build(environment);
+    public void run(final ApplicationConfig configuration,
+                    final Environment environment) {
+        DseGraphFactory graphFactory = configuration.getDseGraphFactory();
+
+        DseCluster c = graphFactory.build(environment);
+        DseSession s = c.newSession();
+        GraphTraversalSource g = DseGraph.traversal(s);
+
+        environment.jersey().register(new MyResource(g));
     }
 }
 ```

@@ -62,7 +62,7 @@ public class DseGraphHealthCheck extends HealthCheck {
                     validationQuery,
                     result.toString());
             LOGGER.info(msg);
-            return Result.healthy();
+            return Result.healthy(msg);
 
         } catch (TimeoutException ex) {
             String msg = String.format("Validation query was unable to complete after %d ms: '%s'",
@@ -71,6 +71,7 @@ public class DseGraphHealthCheck extends HealthCheck {
 
             LOGGER.error(msg);
             return Result.unhealthy(msg);
+
         } catch (Exception ex) {
             String msg = String.format("Validation query was unable to execute: '%s' (%s)",
                     validationQuery,

@@ -25,34 +25,37 @@ A health check is setup using the dropwizard health check registry. It executes 
 The `Cluster` built from the `DseGraphFactory` is included in dropwizard's managed lifecycle. This
 will allow dropwizard to try and gracefully shut down the DSEGraph client connections on shutdown.
 
-## Dependency Managed Usage ##
+## Usage ##
 
 This utility includes references to DSE Graph and DropWizard. To maintain correct
 versions of these 3rd party libraries, there is a Dependency Management section in
-the POM. To use it, include the following in your pom:
+the POM. To use it, include the following in your pom (NOTE: dropwizard-swagger is
+only included as an example how to use the proper version to get swagger support):
 
-Top Level:
+#### Properties:
 ```xml
     <properties>
         <dropwizard-desgraph.version>1.2.2-1.2.4-SNAPSHOT</dropwizard-desgraph.version>
+        <dropwizard.version>1.2.2</dropwizard.version>
+        <desgraph.version>1.2.4</desgraph.version>
+        <dropwizard-swagger.version>1.2.2-2</dropwizard-swagger.version>
     </properties>
 ```
-
+#### Dependency Management:
 ```xml
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>com.experoinc</groupId>
-                <artifactId>dropwizard-dsegraph</artifactId>
-                <version>${dropwizard-desgraph.version}</version>
+                <groupId>io.dropwizard</groupId>
+                <artifactId>dropwizard-bom</artifactId>
+                <version>${dropwizard.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>
 ```
-
-Dependencies Section (add or remove dependencies as needed - Dependency Management will auto-assign the version):
+#### Dependencies:
 ```xml
     <dependencies>
         <dependency>
@@ -62,33 +65,26 @@ Dependencies Section (add or remove dependencies as needed - Dependency Manageme
         </dependency>
         <dependency>
             <groupId>io.dropwizard</groupId>
+            <artifactId>dropwizard-auth</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.dropwizard</groupId>
             <artifactId>dropwizard-forms</artifactId>
         </dependency>
         <dependency>
             <groupId>com.datastax.dse</groupId>
             <artifactId>dse-java-driver-graph</artifactId>
+            <version>${desgraph.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.datastax.dse</groupId>
-            <artifactId>dse-java-driver-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.datastax.dse</groupId>
-            <artifactId>dse-java-driver-extras</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.datastax.dse</groupId>
-            <artifactId>dse-java-driver-mapping</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
+            <groupId>com.smoketurner</groupId>
+            <artifactId>dropwizard-swagger</artifactId>
+            <version>${dropwizard-swagger.version}</version>
         </dependency>
     </dependencies>
 ```
-
+#### ApplicationConfig.java
 Include a `DseGraphFactory` instance in your application config
-
 ```java
 public class ApplicationConfig extends Configuration {
     @Valid
@@ -106,18 +102,16 @@ public class ApplicationConfig extends Configuration {
     }
 }
 ```
-
-Include a section in config.yml to define the graph properties:
-
+#### Config.yml
+Define the graph properties:
 ```yaml
 graphFactory:
- graphName: ${DPS_DB_NAME:-dps_graph}
+ graphName: ${DB_NAME:-dps_graph}
  contactPoints:
-   - ${DPS_DB_HOST:-1.2.3.4}
+   - ${DB_HOST:-1.2.3.4}
 ```
-
-Build the DSEGraph cluster in your applications `run(ApplicationConfig configuration, Environment environment)` method.
-
+#### Application.java
+Build the DSEGraph cluster in your applications `run(ApplicationConfig configuration, Environment environment)` method:
 ```java
 public class App extends Application<ApplicationConfig> {
     

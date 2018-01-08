@@ -28,12 +28,12 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-        <datastax.driver.version>1.2.4</datastax.driver.version>
         <dropwizard.version>1.2.2</dropwizard.version>
+        <datastax.version>1.2.4</datastax.version>
         <slf4j.version>1.7.25</slf4j.version>
 
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
+        <!--<maven.compiler.source>1.8</maven.compiler.source>-->
+        <!--<maven.compiler.target>1.8</maven.compiler.target>-->
     </properties>
 
     <distributionManagement>
@@ -43,73 +43,79 @@
         </snapshotRepository>
     </distributionManagement>
 
-    <dependencyManagement>
-        <dependencies>
+    <!--<dependencyManagement>-->
+        <!--<dependencies>-->
 
-            <!-- https://mvnrepository.com/artifact/io.dropwizard/dropwizard-core -->
-            <dependency>
-                <groupId>io.dropwizard</groupId>
-                <artifactId>dropwizard-bom</artifactId>
-                <version>${dropwizard.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
+            <!--&lt;!&ndash; https://mvnrepository.com/artifact/io.dropwizard/dropwizard-core &ndash;&gt;-->
+            <!--<dependency>-->
+                <!--<groupId>io.dropwizard</groupId>-->
+                <!--<artifactId>dropwizard-bom</artifactId>-->
+                <!--<version>${dropwizard.version}</version>-->
+                <!--<type>pom</type>-->
+                <!--<scope>import</scope>-->
+            <!--</dependency>-->
 
-            <!-- https://mvnrepository.com/artifact/com.datastax.dse/dse-java-driver-core -->
-            <dependency>
-                <groupId>com.datastax.dse</groupId>
-                <artifactId>dse-java-driver-core</artifactId>
-                <version>${datastax.driver.version}</version>
-            </dependency>
+            <!--&lt;!&ndash; https://mvnrepository.com/artifact/com.datastax.dse/dse-java-driver-graph &ndash;&gt;-->
+            <!--<dependency>-->
+                <!--<groupId>com.datastax.dse</groupId>-->
+                <!--<artifactId>dse-java-driver-graph</artifactId>-->
+                <!--<version>${datastax.version}</version>-->
+                <!--<type>pom</type>-->
+                <!--<scope>import</scope>-->
+            <!--</dependency>-->
 
-            <!-- https://mvnrepository.com/artifact/com.datastax.dse/dse-java-driver-graph -->
-            <dependency>
-                <groupId>com.datastax.dse</groupId>
-                <artifactId>dse-java-driver-graph</artifactId>
-                <version>${datastax.driver.version}</version>
-            </dependency>
-
-            <!-- https://mvnrepository.com/artifact/com.datastax.dse/dse-java-driver-mapping -->
-            <dependency>
-                <groupId>com.datastax.dse</groupId>
-                <artifactId>dse-java-driver-mapping</artifactId>
-                <version>${datastax.driver.version}</version>
-            </dependency>
-
-            <!-- https://mvnrepository.com/artifact/com.datastax.dse/dse-java-driver-extras -->
-            <dependency>
-                <groupId>com.datastax.dse</groupId>
-                <artifactId>dse-java-driver-extras</artifactId>
-                <version>${datastax.driver.version}</version>
-            </dependency>
-
-            <!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-api -->
-            <dependency>
-                <groupId>org.slf4j</groupId>
-                <artifactId>slf4j-api</artifactId>
-                <version>${slf4j.version}</version>
-            </dependency>
-
-        </dependencies>
-    </dependencyManagement>
+        <!--</dependencies>-->
+    <!--</dependencyManagement>-->
 
     <dependencies>
         <dependency>
             <groupId>com.datastax.dse</groupId>
             <artifactId>dse-java-driver-graph</artifactId>
-            <!-- Dependency Management will auto-assign the version -->
+            <version>${datastax.version}</version>
         </dependency>
 
         <dependency>
             <groupId>io.dropwizard</groupId>
             <artifactId>dropwizard-core</artifactId>
-            <!-- Dependency Management will auto-assign the version -->
+            <version>${dropwizard.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <!-- Dependency Management will auto-assign the version -->
+            <version>${slf4j.version}</version>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>3.0.1</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.0.0</version>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
 </project>

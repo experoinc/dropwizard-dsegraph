@@ -31,6 +31,7 @@
         <dropwizard.version>1.2.2</dropwizard.version>
         <datastax.version>1.2.4</datastax.version>
         <slf4j.version>1.7.25</slf4j.version>
+        <lombok.version>1.16.20</lombok.version>
 
         <!--<maven.compiler.source>1.8</maven.compiler.source>-->
         <!--<maven.compiler.target>1.8</maven.compiler.target>-->
@@ -43,47 +44,37 @@
         </snapshotRepository>
     </distributionManagement>
 
-    <!--<dependencyManagement>-->
-        <!--<dependencies>-->
-
-            <!--&lt;!&ndash; https://mvnrepository.com/artifact/io.dropwizard/dropwizard-core &ndash;&gt;-->
-            <!--<dependency>-->
-                <!--<groupId>io.dropwizard</groupId>-->
-                <!--<artifactId>dropwizard-bom</artifactId>-->
-                <!--<version>${dropwizard.version}</version>-->
-                <!--<type>pom</type>-->
-                <!--<scope>import</scope>-->
-            <!--</dependency>-->
-
-            <!--&lt;!&ndash; https://mvnrepository.com/artifact/com.datastax.dse/dse-java-driver-graph &ndash;&gt;-->
-            <!--<dependency>-->
-                <!--<groupId>com.datastax.dse</groupId>-->
-                <!--<artifactId>dse-java-driver-graph</artifactId>-->
-                <!--<version>${datastax.version}</version>-->
-                <!--<type>pom</type>-->
-                <!--<scope>import</scope>-->
-            <!--</dependency>-->
-
-        <!--</dependencies>-->
-    <!--</dependencyManagement>-->
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>io.dropwizard</groupId>
+                <artifactId>dropwizard-bom</artifactId>
+                <version>${dropwizard.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <dependencies>
+        <dependency>
+            <groupId>io.dropwizard</groupId>
+            <artifactId>dropwizard-core</artifactId>
+        </dependency>
         <dependency>
             <groupId>com.datastax.dse</groupId>
             <artifactId>dse-java-driver-graph</artifactId>
             <version>${datastax.version}</version>
         </dependency>
-
-        <dependency>
-            <groupId>io.dropwizard</groupId>
-            <artifactId>dropwizard-core</artifactId>
-            <version>${dropwizard.version}</version>
-        </dependency>
-
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
             <version>${slf4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>${lombok.version}</version>
         </dependency>
     </dependencies>
 

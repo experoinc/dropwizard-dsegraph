@@ -18,12 +18,14 @@
 package com.experoinc.dropwizard.dsegraph;
 
 import com.codahale.metrics.health.HealthCheck;
+import com.datastax.driver.core.ResultSetFuture;
 import com.datastax.driver.dse.DseSession;
 import com.google.common.util.concurrent.ListenableFuture;
 import io.dropwizard.util.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.validation.constraints.NotNull;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
@@ -42,9 +44,9 @@ public class DseGraphHealthCheck extends HealthCheck {
     private final Duration validationTimeout;
 
     public DseGraphHealthCheck(
-            DseSession session,
-            String validationQuery,
-            Duration validationTimeout) {
+            @NotNull DseSession session,
+            @NotNull String validationQuery,
+            @NotNull Duration validationTimeout) {
 
         this.session = session;
         this.validationQuery = validationQuery;
@@ -55,8 +57,15 @@ public class DseGraphHealthCheck extends HealthCheck {
     protected Result check() {
 
         try {
-            ListenableFuture future = session.executeGraphAsync(validationQuery);
-            Object result = future.get(validationTimeout.toMilliseconds(), TimeUnit.MILLISECONDS);
+            Object result;
+
+            if (validationQuery.startsWith("g.V()")) {
+                ListenableFuture future = session.executeGraphAsync(validationQuery);
+                result = future.get(validationTimeout.toMilliseconds(), TimeUnit.MILLISECONDS);
+            } else {
+                ResultSetFuture future = session.executeAsync(validationQuery);
+                result = future.get(validationTimeout.toMilliseconds(), TimeUnit.MILLISECONDS);
+            }
 
             String msg = String.format("Validation query completed on %s (%s): '%s' = '%s'",
                     session.getCluster().getConfiguration().getGraphOptions().getGraphName(),

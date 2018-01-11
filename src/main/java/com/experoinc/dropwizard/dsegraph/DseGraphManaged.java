@@ -42,12 +42,10 @@ public class DseGraphManaged implements Managed {
         this.shutdownTimeout = shutdownTimeout;
     }
 
-    @Override
     public void start() throws Exception {
         // no-op
     }
 
-    @Override
     public void stop() throws Exception {
         LOG.info("Attempting to shutdown TinkerPop cluster connection.");
 

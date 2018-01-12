@@ -52,7 +52,7 @@ public class DseGraphFactory {
     @Setter
     @NonNull
     @NotEmpty
-    private String validationQuery = "g.V().hasNext()";
+    private String validationQuery = "g.inject(1).hasNext()";
     //private String validationQuery = "select release_version from system.local";
 
     @Getter

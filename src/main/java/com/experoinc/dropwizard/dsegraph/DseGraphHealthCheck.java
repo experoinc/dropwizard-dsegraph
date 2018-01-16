@@ -59,7 +59,7 @@ public class DseGraphHealthCheck extends HealthCheck {
         try {
             Object result;
 
-            if (validationQuery.startsWith("g.V()")) {
+            if (validationQuery.startsWith("g.")) {
                 ListenableFuture future = session.executeGraphAsync(validationQuery);
                 result = future.get(validationTimeout.toMilliseconds(), TimeUnit.MILLISECONDS);
             } else {

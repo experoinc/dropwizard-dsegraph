@@ -48,6 +48,10 @@ public class DseGraphFactory {
     @Min(1)
     private int port = DEFAULT_PORT;
 
+    // NOTE: This can either be a traversal or a CQL command. The healthcheck code determines
+    //       which it is by checking for the prefix "g.". If it starts with that, it is assumed
+    //       to be a traversal and "executeGraphAsync()" is called. Otherwise, it is assumed to
+    //       be CQL, which causes "executeAsync()" to be calld instead.
     @Getter
     @Setter
     @NonNull

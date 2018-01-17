@@ -110,6 +110,18 @@ graphFactory:
  contactPoints:
    - ${DB_HOST:-1.2.3.4}
 ```
+
+#### Option Security Configuration - Authentication
+Optionally, authentication can be enabled by including `userName` & `password` values.  
+```yaml
+graphFactory:
+ graphName: ${DB_NAME:-dps_graph}
+ userName: ${DB_USER:-username}
+ password: ${DB_PASS:-password}
+ contactPoints:
+   - ${DB_HOST:-1.2.3.4}
+```
+
 #### Application.java
 Build the DSEGraph cluster in your applications `run(ApplicationConfig configuration, Environment environment)` method:
 ```java

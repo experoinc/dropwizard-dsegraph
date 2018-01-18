@@ -111,13 +111,30 @@ graphFactory:
    - ${DB_HOST:-1.2.3.4}
 ```
 
-#### Option Security Configuration - Authentication
-Optionally, authentication can be enabled by including `userName` & `password` values.  
+#### Optional Security Configuration: Authentication
+Optionally, [DSE authentication][3] can be enabled by including `userName` & `password` values.  
 ```yaml
 graphFactory:
  graphName: ${DB_NAME:-dps_graph}
  userName: ${DB_USER:-username}
  password: ${DB_PASS:-password}
+ contactPoints:
+   - ${DB_HOST:-1.2.3.4}
+```
+
+#### Optional Security Configuration: SSL Encryption
+Optionally, [SSL encrypted conections to the cluster][4] can be configured. This approach uses truststore and keystore files which were genereated with OpenSSL and Java `keytool` as described in [Setting up SSL certificates][5] in the DataStax documentation 
+
+Basic SSL only requires a truststore with the DSE cluster public certificates or the public key which has signed the certificates. This is configured with `sslTruststoreFile` and `sslTruststorePassword`.
+
+If authentication of the client certificates is also required, this is configured with `sslKeystoreFile` and `sslKeystorePassword`.
+```yaml
+graphFactory:
+ graphName: ${DB_NAME:-dps_graph}
+ sslTruststoreFile: ${SSL_TRUSTSTORE_FILE:-\path\to\client.truststore}
+ sslTruststorePassword: ${SSL_TRUSTSTORE_PASSWORD:-sslTruststorePassword}
+ sslKeystoreFile: ${SSL_KEYSTORE_FILE:-\path\to\client.keystore}
+ sslKeystorePassword: ${SSL_KEYSTORE_PASSWORD:-sslKeystorePassword}
  contactPoints:
    - ${DB_HOST:-1.2.3.4}
 ```
@@ -143,3 +160,7 @@ public class App extends Application<ApplicationConfig> {
 
 [1]: https://dropwizard.io
 [2]: https://www.datastax.com/products/datastax-enterprise-graph
+[3]: http://docs.datastax.com/en/developer/java-driver-dse/1.4/manual/auth/
+[4]: http://docs.datastax.com/en/developer/java-driver-dse/1.4/manual/ssl/
+[5]: http://docs.datastax.com/en/dse/5.1/dse-admin/datastax_enterprise/security/secSetUpSSLCert.html
+

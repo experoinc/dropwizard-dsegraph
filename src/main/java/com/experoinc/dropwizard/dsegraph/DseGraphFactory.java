@@ -122,7 +122,7 @@ public class DseGraphFactory {
         }
 
         if (null != sslTruststoreFile && sslTruststoreFile.length() > 0 && null != sslTruststorePassword && sslTruststorePassword.length() > 0 ) {
-            builder = addSSL(builder);
+            builder = withSSL(builder);
         }
 
         DseCluster cluster = builder.build();
@@ -135,9 +135,9 @@ public class DseGraphFactory {
         return cluster;
     }
 
-    private DseCluster.Builder addSSL(DseCluster.Builder builder) throws KeyStoreException, NoSuchAlgorithmException, IOException, CertificateException, KeyManagementException, UnrecoverableKeyException {
+    private DseCluster.Builder withSSL(DseCluster.Builder builder) throws KeyStoreException, NoSuchAlgorithmException, IOException, CertificateException, KeyManagementException, UnrecoverableKeyException {
 
-        // Start SSL Context
+        // JKS Truststore
         KeyStore truststore = KeyStore.getInstance("JKS");
         truststore.load(new FileInputStream(sslTruststoreFile), sslTruststorePassword.toCharArray());
         TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
@@ -145,7 +145,7 @@ public class DseGraphFactory {
 
         SSLContext sslContext = SSLContext.getInstance("TLSv1.2");
 
-        // check to see if we're doing client authentication
+        // Keystore details means supporting client authentication
         if (null != sslKeystoreFile && sslKeystoreFile.length() > 0 && null != sslKeystorePassword && sslKeystorePassword.length() > 0 ) {
             KeyStore keystore = KeyStore.getInstance("JKS");
             keystore.load(new FileInputStream(sslKeystoreFile), sslKeystorePassword.toCharArray());

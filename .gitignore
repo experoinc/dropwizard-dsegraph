@@ -1,5 +1,15 @@
 target/
 
+###################################################################################
+# DO NOT EDIT BELOW THIS LINE - THE FOLLOWING SECTIONS ARE AUTO-GENERATED         #
+###################################################################################
+# NOTE: If you must add something, please follow these rules:                     #
+#       * If it is subdir-specific, put it in the .gitignore of that subdirectory #
+#       * If it is global, first go to https://www.gitignore.io/api/list to see   #
+#         if your specific use case already exists in the supported list          #
+#       * If none of the above applies, add it to the TOP of this file            #
+###################################################################################
+
 # Created by https://www.gitignore.io/api/java,intellij
 
 ### Intellij ###

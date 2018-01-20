@@ -21,5 +21,5 @@ package com.experoinc.dropwizard.dsegraph;
  * @author Ted Wilmes
  */
 public interface DseGraphConfiguration {
-    DseGraphFactory getDseGraphFactory();
+    DseGraphFactory getDseGraph();
 }

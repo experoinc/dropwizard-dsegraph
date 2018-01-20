@@ -18,8 +18,6 @@
 package com.experoinc.dropwizard.dsegraph;
 
 import com.datastax.driver.core.RemoteEndpointAwareJdkSSLOptions;
-import com.datastax.driver.core.RemoteEndpointAwareSSLOptions;
-import com.datastax.driver.core.SSLOptions;
 import com.datastax.driver.dse.DseCluster;
 import com.datastax.driver.dse.DseSession;
 import com.datastax.driver.dse.graph.GraphOptions;
@@ -27,19 +25,17 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.dropwizard.setup.Environment;
 import io.dropwizard.util.Duration;
 import io.dropwizard.validation.MinDuration;
-import io.netty.handler.ssl.SslContextBuilder;
-import io.netty.handler.ssl.SslProvider;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 import org.hibernate.validator.constraints.NotEmpty;
 
-import javax.net.ssl.*;
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManagerFactory;
 import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.security.*;
 import java.security.cert.CertificateException;
 import java.util.concurrent.TimeUnit;
@@ -62,7 +58,7 @@ public class DseGraphFactory {
     // NOTE: This can either be a traversal or a CQL command. The healthcheck code determines
     //       which it is by checking for the prefix "g.". If it starts with that, it is assumed
     //       to be a traversal and "executeGraphAsync()" is called. Otherwise, it is assumed to
-    //       be CQL, which causes "executeAsync()" to be calld instead.
+    //       be CQL, which causes "executeAsync()" to be called instead.
     @Getter
     @Setter
     @NonNull
@@ -121,7 +117,7 @@ public class DseGraphFactory {
             builder = builder.withCredentials(userName, password);
         }
 
-        if (null != sslTruststoreFile && sslTruststoreFile.length() > 0 && null != sslTruststorePassword && sslTruststorePassword.length() > 0 ) {
+        if (null != sslTruststoreFile && sslTruststoreFile.length() > 0 && null != sslTruststorePassword && sslTruststorePassword.length() > 0) {
             builder = withSSL(builder);
         }
 
@@ -146,7 +142,7 @@ public class DseGraphFactory {
         SSLContext sslContext = SSLContext.getInstance("TLSv1.2");
 
         // Keystore details means supporting client authentication
-        if (null != sslKeystoreFile && sslKeystoreFile.length() > 0 && null != sslKeystorePassword && sslKeystorePassword.length() > 0 ) {
+        if (null != sslKeystoreFile && sslKeystoreFile.length() > 0 && null != sslKeystorePassword && sslKeystorePassword.length() > 0) {
             KeyStore keystore = KeyStore.getInstance("JKS");
             keystore.load(new FileInputStream(sslKeystoreFile), sslKeystorePassword.toCharArray());
             KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());

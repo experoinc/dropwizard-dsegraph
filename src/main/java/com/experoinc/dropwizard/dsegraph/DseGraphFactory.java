@@ -46,6 +46,10 @@ public class DseGraphFactory {
 
     @Getter
     @Setter
+    private String[] name;
+
+    @Getter
+    @Setter
     @NonNull
     @NotEmpty
     private String[] contactPoints;

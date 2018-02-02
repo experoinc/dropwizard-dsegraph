@@ -17,9 +17,34 @@
 
 package com.experoinc.dropwizard.dsegraph;
 
+import lombok.Getter;
+import lombok.Setter;
+
 /**
  * @author Ted Wilmes
  */
-public interface DseGraphConfiguration {
-    DseGraphFactory getDseGraph();
+public class DseGraphConfiguration {
+    @Getter
+    @Setter
+    private String use;
+
+    @Getter
+    @Setter
+    private DseGraphFactory dseGraph;
+
+    @Getter
+    @Setter
+    private DseGraphFactory[] graphs;
+
+    public DseGraphFactory useDseGraph() {
+        if(use == null || use.equals("")) {
+            return dseGraph;
+        }
+        for(DseGraphFactory graph : graphs) {
+            if(graph.getName() != null && graph.getName().equals(use)) {
+                return graph;
+            }
+        }
+        return null;
+    }
 }

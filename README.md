@@ -147,7 +147,7 @@ public class App extends Application<ApplicationConfig> {
     @Override
     public void run(final ApplicationConfig configuration,
                     final Environment environment) {
-        DseGraphFactory graphFactory = configuration.getDseGraphFactory();
+        DseGraphFactory graphFactory = configuration.useDseGraph();
 
         DseCluster c = graphFactory.build(environment);
         DseSession s = c.newSession();

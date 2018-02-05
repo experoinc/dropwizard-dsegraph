@@ -44,16 +44,26 @@ public class DseGraphFactory {
 
     private static final int DEFAULT_PORT = 8182;
 
+    /**
+     * In the case that there are multiple configurations, name contains a unique name for this configuration.
+     */
     @Getter
     @Setter
-    private String[] name;
+    private String name;
 
+    /**
+     * List of Dse Graph DB nodes to which a Tinkerpop/Gremlin connection may be established. Format is
+     * IP_ADDRESS or IP_ADDRESS:PORT.
+     */
     @Getter
     @Setter
     @NonNull
     @NotEmpty
     private String[] contactPoints;
 
+    /**
+     * Optionally overrides the port number for the Tinkerpop/Gremlin connection.
+     */
     @Getter
     @Setter
     @Min(1)
@@ -76,32 +86,53 @@ public class DseGraphFactory {
     @MinDuration(value = 1, unit = TimeUnit.MILLISECONDS)
     private Duration validationQueryTimeout = Duration.seconds(10);
 
+    /**
+     * Name of the graph object on the Dse Graph DB server.
+     */
     @Getter
     @Setter
     @NonNull
     @NotEmpty
     private String graphName;
 
+    /**
+     * Username for Basic Client-to-Node Authentication to the Gremlin/Tinkerpop connection.
+     */
     @Getter
     @Setter
     private String userName;
 
+    /**
+     * Password for Basic Client-to-Node Authentication to the Gremlin/Tinkerpop connection.
+     */
     @Getter
     @Setter
     private String password;
 
+    /**
+     * Truststore File for SSL/TLS Client-to-Node Authentication to the Gremlin/Tinkerpop connection.
+     */
     @Getter
     @Setter
     private String sslTruststoreFile;
 
+    /**
+     * Truststore Password for SSL/TLS Client-to-Node Authentication to the Gremlin/Tinkerpop connection.
+     */
     @Getter
     @Setter
     private String sslTruststorePassword;
 
+    /**
+     * Keystore File for SSL/TLS Client-to-Node Authentication to the Gremlin/Tinkerpop connection.
+     */
     @Getter
     @Setter
     private String sslKeystoreFile;
 
+    /**
+     * Keystore Password for SSL/TLS Client-to-Node Authentication to the Gremlin/Tinkerpop connection.
+     */
     @Getter
     @Setter
     private String sslKeystorePassword;

@@ -22,20 +22,39 @@ import lombok.Setter;
 
 /**
  * @author Ted Wilmes
+ *
+ * Configuration class for DseGraph. Configuration properties may be set directly under "dseGraph:' in config.yml
+ * or may be grouped under named configurations which appear under "dseGraph:" "graphs:". If the "use:" parameter
+ * is missing or the empty string, the global configuration is used, otherwise one of the "graphs:" is selected
+ * based on the value of the "use:" parameter, whose value if present must match the "name:" parameter under one
+ * of the list elements under "graphs:"
  */
 public class DseGraphConfiguration {
+    /**
+     * Name of one of the (possibly multiple) configurations of DseGraph
+     */
     @Getter
     @Setter
     private String use;
 
+    /**
+     * Contains global configurations for DseGraphFactory
+     */
     @Getter
     @Setter
     private DseGraphFactory dseGraph;
 
+    /**
+     * Contains zero or  more named configurations for DseGraphFactory that can be selected by the "use:" property.
+     */
     @Getter
     @Setter
     private DseGraphFactory[] graphs;
 
+    /**
+     * Returns a configured DseGraphFactory - either the global configuration or one of the named configurations
+     * depending on the value of "use:"
+     */
     public DseGraphFactory useDseGraph() {
         if(use == null || use.equals("")) {
             return dseGraph;

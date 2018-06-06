@@ -22,6 +22,7 @@ import com.datastax.driver.core.ResultSetFuture;
 import com.datastax.driver.dse.DseSession;
 import com.google.common.util.concurrent.ListenableFuture;
 import io.dropwizard.util.Duration;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,9 +36,8 @@ import java.util.concurrent.TimeoutException;
  * @author Ted Wilmes
  * @author dan.sorak - updated query call and log messages
  */
+@Slf4j
 public class DseGraphHealthCheck extends HealthCheck {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(DseGraphHealthCheck.class);
 
     private final DseSession session;
     private final String validationQuery;
@@ -72,7 +72,7 @@ public class DseGraphHealthCheck extends HealthCheck {
                     session.getCluster().getClusterName(),
                     validationQuery,
                     result.toString());
-            LOGGER.info(msg);
+            log.info(msg);
             return Result.healthy(msg);
 
         } catch (TimeoutException ex) {
@@ -82,7 +82,7 @@ public class DseGraphHealthCheck extends HealthCheck {
                     session.getCluster().getClusterName(),
                     validationQuery);
 
-            LOGGER.error(msg);
+            log.error(msg);
             return Result.unhealthy(msg);
 
         } catch (Exception ex) {
@@ -91,7 +91,7 @@ public class DseGraphHealthCheck extends HealthCheck {
                     session.getCluster().getClusterName(),
                     validationQuery,
                     ex.getMessage());
-            LOGGER.error(msg);
+            log.error(msg);
             return Result.unhealthy(msg);
         }
     }

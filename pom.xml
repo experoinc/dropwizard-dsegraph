@@ -31,11 +31,11 @@
         <dropwizard.version>1.2.5</dropwizard.version>
         <datastax.version>1.2.6</datastax.version>
         <slf4j.version>1.7.25</slf4j.version>
-        <lombok.version>1.16.20</lombok.version>
+        <lombok.version>1.16.22</lombok.version>
         <bcpkix-jdk15on.version>1.59</bcpkix-jdk15on.version>
 
-        <!--<maven.compiler.source>1.8</maven.compiler.source>-->
-        <!--<maven.compiler.target>1.8</maven.compiler.target>-->
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
     </properties>
 
     <distributionManagement>
@@ -76,6 +76,12 @@
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>${lombok.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok-maven-plugin</artifactId>
+            <version>${lombok.version}.0</version>
         </dependency>
         <dependency>
             <groupId>org.bouncycastle</groupId>
@@ -100,19 +106,44 @@
                 </executions>
             </plugin>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.0.0</version>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok-maven-plugin</artifactId>
+                <version>${lombok.version}.0</version>
                 <executions>
                     <execution>
-                        <id>attach-javadocs</id>
+                        <phase>generate-sources</phase>
                         <goals>
-                            <goal>jar</goal>
+                            <goal>delombok</goal>
                         </goals>
                     </execution>
                 </executions>
+                <configuration>
+                    <addOutputDirectory>false</addOutputDirectory>
+                    <sourceDirectory>src/main/java</sourceDirectory>
+                </configuration>
+            </plugin>
+            <!--<plugin>-->
+            <!--<groupId>org.apache.maven.plugins</groupId>-->
+            <!--<artifactId>maven-javadoc-plugin</artifactId>-->
+            <!--<version>3.0.0</version>-->
+            <!--<executions>-->
+            <!--<execution>-->
+            <!--<id>attach-javadocs</id>-->
+            <!--<goals>-->
+            <!--<goal>jar</goal>-->
+            <!--</goals>-->
+            <!--</execution>-->
+            <!--</executions>-->
+            <!--</plugin>-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.0.1</version>
+                <configuration>
+                    <defaultVersion>${project.version}</defaultVersion>
+                    <sourcepath>target/generated-sources/delombok</sourcepath>
+                </configuration>
             </plugin>
         </plugins>
     </build>
-
 </project>

@@ -49,19 +49,19 @@ public abstract class DseGraphBundle<T extends Configuration> implements Configu
     @Getter
     private DseSession session;
 
-    @Getter
-    private GraphTraversalSource g;
+    private GraphTraversalSource _g;
 
-    //    @Override
-    public void initialize(Bootstrap<?> bootstrap) {
-        Security.addProvider(new BouncyCastleProvider());
-
-//        bootstrap.addBundle(new ViewBundle<Configuration>());
-//        ModelConverters.getInstance()
-//                       .addConverter(new ModelResolver(bootstrap.getObjectMapper()));
+    public GraphTraversalSource getG() {
+        if (null == _g) {
+            _g = DseGraph.traversal(session);
+        }
+        return _g;
     }
 
-    //    @Override
+    public void initialize(Bootstrap<?> bootstrap) {
+        Security.addProvider(new BouncyCastleProvider());
+    }
+
     public void run(T configuration, Environment environment) throws Exception {
         final DseGraphBundleConfiguration dseGraphBundleConfiguration = getDseGraphBundleConfiguration(configuration);
         if (dseGraphBundleConfiguration == null) {
@@ -69,7 +69,6 @@ public abstract class DseGraphBundle<T extends Configuration> implements Configu
                     "You need to provide an instance of DseGraphBundleConfiguration");
         }
 
-//    public DseCluster build(Environment environment) throws CertificateException, UnrecoverableKeyException, NoSuchAlgorithmException, KeyStoreException, KeyManagementException, IOException {
         DseCluster.Builder builder = DseCluster.builder()
                                                .addContactPoints(dseGraphBundleConfiguration.getContactPoints())
                                                .withGraphOptions(new GraphOptions().setGraphName(dseGraphBundleConfiguration.getGraphName()));
@@ -85,46 +84,22 @@ public abstract class DseGraphBundle<T extends Configuration> implements Configu
             && dseGraphBundleConfiguration.getSslTruststoreFile().length() > 0
             && null != dseGraphBundleConfiguration.getSslTruststorePassword()
             && dseGraphBundleConfiguration.getSslTruststorePassword().length() > 0) {
-//            builder = withSSL(builder, configuration);
             builder = withSSL(builder, dseGraphBundleConfiguration);
         }
 
         cluster = builder.build();
         session = cluster.newSession();
-        g = DseGraph.traversal(session);
 
         environment.lifecycle().manage(new DseGraphManaged(cluster, dseGraphBundleConfiguration.getShutdownTimeout()));
         environment.healthChecks().register("dsegraph",
                                             new DseGraphHealthCheck(session,
                                                                     dseGraphBundleConfiguration.getValidationQuery(),
                                                                     dseGraphBundleConfiguration.getValidationQueryTimeout()));
-
-//        final ConfigurationHelper configurationHelper = new ConfigurationHelper(configuration, dseGraphBundleConfiguration);
-//        new AssetsBundle("/swagger-static", configurationHelper.getSwaggerUriPath(), null, "swagger-assets").run(environment);
-//        new AssetsBundle("/swagger-static/oauth2-redirect.html", configurationHelper.getOAuth2RedirectUriPath(), null, "swagger-oauth2-connect").run(environment);
-//
-//        dseGraphBundleConfiguration.build(configurationHelper.getUrlPattern());
-//
-//        FilterFactory.setFilter(new AuthParamFilter());
-//
-//        environment.jersey().register(new ApiListingResource());
-//        environment.jersey().register(new SwaggerSerializers());
-//        if (dseGraphBundleConfiguration.isIncludeSwaggerResource()) {
-//            environment.jersey()
-//                    .register(new SwaggerResource(
-//                            configurationHelper.getUrlPattern(),
-//                            dseGraphBundleConfiguration
-//                                    .getSwaggerViewConfiguration(),
-//                            dseGraphBundleConfiguration.getSwaggerOAuth2Configuration(),
-//                            dseGraphBundleConfiguration.getContextRoot()));
-//        }
     }
 
     protected abstract DseGraphBundleConfiguration getDseGraphBundleConfiguration(T configuration);
 
     private DseCluster.Builder withSSL(DseCluster.Builder builder, DseGraphBundleConfiguration dseGraphBundleConfiguration) throws KeyStoreException, NoSuchAlgorithmException, IOException, CertificateException, KeyManagementException, UnrecoverableKeyException {
-//    private DseCluster.Builder withSSL(DseCluster.Builder builder, T configuration) throws KeyStoreException, NoSuchAlgorithmException, IOException, CertificateException, KeyManagementException, UnrecoverableKeyException {
-//        final DseGraphBundleConfiguration dseGraphBundleConfiguration = getDseGraphBundleConfiguration(configuration);
 
         // JKS Truststore
         KeyStore truststore = KeyStore.getInstance("JKS");
@@ -139,6 +114,7 @@ public abstract class DseGraphBundle<T extends Configuration> implements Configu
             && dseGraphBundleConfiguration.getSslKeystoreFile().length() > 0
             && null != dseGraphBundleConfiguration.getSslKeystorePassword()
             && dseGraphBundleConfiguration.getSslKeystorePassword().length() > 0) {
+
             KeyStore keystore = KeyStore.getInstance("JKS");
             keystore.load(new FileInputStream(dseGraphBundleConfiguration.getSslKeystoreFile()), dseGraphBundleConfiguration.getSslKeystorePassword().toCharArray());
             KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());

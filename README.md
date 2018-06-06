@@ -118,7 +118,7 @@ Basic SSL only requires a truststore with the DSE cluster public certificates or
 
 If authentication of the client certificates is also required, this is configured with `sslKeystoreFile` and `sslKeystorePassword`.
 ```yaml
-graphFactory:
+dseGraph:
 <...>
  sslTruststoreFile: ${SSL_TRUSTSTORE_FILE:-\path\to\client.truststore}
  sslTruststorePassword: "${SSL_TRUSTSTORE_PASSWORD:-sslTruststorePassword}"

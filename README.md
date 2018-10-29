@@ -35,10 +35,9 @@ only included as an example how to use the proper version to get swagger support
 #### Properties:
 ```xml
     <properties>
-        <dropwizard-desgraph.version>1.2.2-1.2.4-SNAPSHOT</dropwizard-desgraph.version>
-        <dropwizard.version>1.2.2</dropwizard.version>
-        <desgraph.version>1.2.4</desgraph.version>
-        <dropwizard-swagger.version>1.2.2-2</dropwizard-swagger.version>
+        <dropwizard-desgraph.version>1.4.0</dropwizard-desgraph.version>
+        <dropwizard.version>1.2.5</dropwizard.version>
+        <desgraph.version>1.2.6</desgraph.version>
     </properties>
 ```
 #### Dependency Management:
@@ -76,50 +75,40 @@ only included as an example how to use the proper version to get swagger support
             <artifactId>dse-java-driver-graph</artifactId>
             <version>${desgraph.version}</version>
         </dependency>
-        <dependency>
-            <groupId>com.smoketurner</groupId>
-            <artifactId>dropwizard-swagger</artifactId>
-            <version>${dropwizard-swagger.version}</version>
-        </dependency>
     </dependencies>
 ```
 #### ApplicationConfig.java
-Include a `DseGraphFactory` instance in your application config
+Include a `DseGraphConfiguration` instance in your application config
 ```java
 public class ApplicationConfig extends Configuration {
+    @Getter
     @Valid
-    @NotNull
-    private DseGraphFactory dseGraphFactory = new DseGraphFactory();
-
-    @JsonProperty("graphFactory")
-    public DseGraphFactory getDseGraphFactory() {
-        return dseGraphFactory;
-    }
-
-    @JsonProperty("graphFactory")
-    public void setDseGraphFactory(DseGraphFactory dseGraphFactory) {
-        this.dseGraphFactory = dseGraphFactory;
-    }
+    @NonNull
+    private DseGraphBundleConfiguration dseGraph;
 }
 ```
 #### Config.yml
 Define the graph properties:
 ```yaml
-graphFactory:
- graphName: ${DB_NAME:-dps_graph}
- contactPoints:
-   - ${DB_HOST:-1.2.3.4}
+dseGraph:
+  graphName: ${DB_NAME:-dse_graph}
+  #port: 9042 # WARNING: port is non-functional currently, but coming soon
+  contactPoints:
+    - ${DB_HOST:-1.2.3.4}
+    - ${DB_HOST:-5.6.7.8}
+  # These are optional and defaulted to the values below
+  shutdownTimeout: 60000
+  validationQuery: "g.inject(1).hasNext()"
+  validationQueryTimeout: 10000
 ```
 
 #### Optional Security Configuration: Authentication
-Optionally, [DSE authentication][3] can be enabled by including `userName` & `password` values.  
+Optionally, [DSE authentication][3] can be enabled by including `userName` & `password` values:  
 ```yaml
-graphFactory:
- graphName: ${DB_NAME:-dps_graph}
- userName: ${DB_USER:-username}
- password: ${DB_PASS:-password}
- contactPoints:
-   - ${DB_HOST:-1.2.3.4}
+dseGraph:
+<...>
+  userName: ${DB_USER:-username}
+  password: ${DB_PASS:-password}
 ```
 
 #### Optional Security Configuration: SSL Encryption
@@ -129,31 +118,37 @@ Basic SSL only requires a truststore with the DSE cluster public certificates or
 
 If authentication of the client certificates is also required, this is configured with `sslKeystoreFile` and `sslKeystorePassword`.
 ```yaml
-graphFactory:
- graphName: ${DB_NAME:-dps_graph}
+dseGraph:
+<...>
  sslTruststoreFile: ${SSL_TRUSTSTORE_FILE:-\path\to\client.truststore}
- sslTruststorePassword: ${SSL_TRUSTSTORE_PASSWORD:-sslTruststorePassword}
+ sslTruststorePassword: "${SSL_TRUSTSTORE_PASSWORD:-sslTruststorePassword}"
  sslKeystoreFile: ${SSL_KEYSTORE_FILE:-\path\to\client.keystore}
- sslKeystorePassword: ${SSL_KEYSTORE_PASSWORD:-sslKeystorePassword}
- contactPoints:
-   - ${DB_HOST:-1.2.3.4}
+ sslKeystorePassword: "${SSL_KEYSTORE_PASSWORD:-sslKeystorePassword}"
 ```
 
 #### Application.java
-Build the DSEGraph cluster in your applications `run(ApplicationConfig configuration, Environment environment)` method:
+Instantiate and add the DseGraph bundle in your `Application` class and refer to it in the `run(ApplicationConfig configuration, Environment environment)` method:
 ```java
 public class App extends Application<ApplicationConfig> {
     
+    private final DseGraphBundle<ApplicationConfig> dseGraphBundle =
+        new DseGraphBundle<ApplicationConfig>() {
+            @Override
+            protected DseGraphBundleConfiguration getDseGraphBundleConfiguration(ApplicationConfig configuration) {
+                return configuration.getDseGraph();
+            }
+        };
+
     @Override
-    public void run(final ApplicationConfig configuration,
-                    final Environment environment) {
-        DseGraphFactory graphFactory = configuration.getDseGraphFactory();
+    public void initialize(Bootstrap<ApplicationConfig> bootstrap) {
+        bootstrap.addBundle(dseGraphBundle);
+    }
 
-        DseCluster c = graphFactory.build(environment);
-        DseSession s = c.newSession();
-        GraphTraversalSource g = DseGraph.traversal(s);
-
-        environment.jersey().register(new MyResource(g));
+    @Override
+    public void run(final ApplicationConfig configuration, final Environment environment) {
+        environment.jersey().register(new MyClusterResource(dseGraphBundle.getCluster()));
+        environment.jersey().register(new MySessionResource(dseGraphBundle.getSession()));
+        environment.jersey().register(new MyTraversalResource(dseGraphBundle.getG()));
     }
 }
 ```

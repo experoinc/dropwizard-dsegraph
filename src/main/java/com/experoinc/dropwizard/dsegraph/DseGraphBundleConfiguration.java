@@ -80,6 +80,13 @@ public class DseGraphBundleConfiguration {
     @JsonProperty
     @Getter
     @Setter
+    @NonNull
+    @NotEmpty
+    private String cqlKeySpace;
+
+    @JsonProperty
+    @Getter
+    @Setter
     private String userName;
 
     @JsonProperty

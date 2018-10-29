@@ -88,8 +88,12 @@ public abstract class DseGraphBundle<T extends Configuration> implements Configu
         }
 
         cluster = builder.build();
-        session = cluster.newSession();
-
+        String cqlKeySpace = dseGraphBundleConfiguration.getCqlKeySpace();
+        if (null == cqlKeySpace || cqlKeySpace.isEmpty()) {
+            session = cluster.newSession();
+        } else {
+            session = cluster.connect(cqlKeySpace);
+        }
         environment.lifecycle().manage(new DseGraphManaged(cluster, dseGraphBundleConfiguration.getShutdownTimeout()));
         environment.healthChecks().register("dsegraph",
                                             new DseGraphHealthCheck(session,
